@@ -1,0 +1,30 @@
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=TechVaultPassword123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=TechVaultDb;User Id=sa;Password=TechVaultPassword123!;TrustServerCertificate=True;
+      - Jwt__SecretKey=SuperSecretKeyForTechVaultAPI_DoNotUseInProduction
+      - Jwt__Issuer=TechVaultAPI
+      - Jwt__Audience=TechVaultUsers
+      - Jwt__ExpiryMinutes=60
+      - ASPNETCORE_ENVIRONMENT=Development
+
+volumes:
+  mssql_data:
