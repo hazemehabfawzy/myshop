@@ -51,8 +51,9 @@ namespace TechVault.API.Controllers
 
             var token = _jwtManager.GenerateToken(user, out var expiresAt);
             var response = _mapper.Map<AuthResponseDto>(user);
-            response.Token = token;
             response.ExpiresAt = expiresAt;
+
+            Response.Headers.Append("X-Access-Token", token);
 
             return Ok(response);
         }
@@ -71,8 +72,9 @@ namespace TechVault.API.Controllers
 
             var token = _jwtManager.GenerateToken(user, out var expiresAt);
             var response = _mapper.Map<AuthResponseDto>(user);
-            response.Token = token;
             response.ExpiresAt = expiresAt;
+
+            Response.Headers.Append("X-Access-Token", token);
 
             return Ok(response);
         }
