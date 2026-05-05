@@ -20,7 +20,6 @@ const AddProductPage = () => {
     sku: '',
     imageUrl: '',
     categoryId: '',
-    specificationsJson: '{}',
     tagIds: []
   });
 
@@ -66,16 +65,7 @@ const AddProductPage = () => {
     setSuccess('');
 
     try {
-      // Parse specs if it's a string
-      const payload = { ...formData };
-      try {
-        payload.specifications = JSON.parse(formData.specificationsJson);
-      } catch (e) {
-        payload.specifications = {};
-      }
-      delete payload.specificationsJson;
-
-      await productService.create(payload);
+      await productService.create(formData);
       setSuccess('Product created successfully!');
       setTimeout(() => navigate('/products'), 2000);
     } catch (err) {
@@ -144,10 +134,7 @@ const AddProductPage = () => {
             <textarea name="description" className="form-control" style={{ minHeight: '100px' }} value={formData.description} onChange={handleChange}></textarea>
           </div>
 
-          <div className="form-group">
-            <label>Specifications (JSON)</label>
-            <textarea name="specificationsJson" className="form-control" style={{ fontFamily: 'monospace', minHeight: '100px' }} value={formData.specificationsJson} onChange={handleChange}></textarea>
-          </div>
+
 
           <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
             <button type="submit" className="btn btn-primary flex-grow" disabled={loading}>

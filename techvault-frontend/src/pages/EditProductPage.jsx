@@ -25,7 +25,6 @@ const EditProductPage = () => {
     sku: '',
     imageUrl: '',
     categoryId: '',
-    specificationsJson: '{}',
     tagIds: []
   });
 
@@ -49,7 +48,6 @@ const EditProductPage = () => {
           sku: product.sku || '',
           imageUrl: product.imageUrl || '',
           categoryId: product.categoryId,
-          specificationsJson: JSON.stringify(product.specifications || {}, null, 2),
           tagIds: product.tagIds || []
         });
       } catch (err) {
@@ -88,15 +86,7 @@ const EditProductPage = () => {
     setError('');
 
     try {
-      const payload = { ...formData };
-      try {
-        payload.specifications = JSON.parse(formData.specificationsJson);
-      } catch (e) {
-        payload.specifications = {};
-      }
-      delete payload.specificationsJson;
-
-      await productService.update(id, payload);
+      await productService.update(id, formData);
       setSuccess('Product updated successfully!');
       setTimeout(() => navigate(`/products/${id}`), 1500);
     } catch (err) {
@@ -181,10 +171,7 @@ const EditProductPage = () => {
             <textarea name="description" className="form-control" style={{ minHeight: '100px' }} value={formData.description} onChange={handleChange}></textarea>
           </div>
 
-          <div className="form-group">
-            <label>Specifications (JSON)</label>
-            <textarea name="specificationsJson" className="form-control" style={{ fontFamily: 'monospace', minHeight: '150px' }} value={formData.specificationsJson} onChange={handleChange}></textarea>
-          </div>
+
 
           <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
             <button type="submit" className="btn btn-primary flex-grow" disabled={saving}>

@@ -25,7 +25,6 @@ namespace TechVault.API.Services.Implementations
             var query = _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.ProductTags).ThenInclude(pt => pt.Tag)
-                .Include(p => p.Specification)
                 .AsNoTracking()
                 .Where(p => p.IsActive);
 
@@ -62,7 +61,6 @@ namespace TechVault.API.Services.Implementations
             var product = await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.ProductTags).ThenInclude(pt => pt.Tag)
-                .Include(p => p.Specification)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id && p.IsActive);
 
@@ -74,7 +72,6 @@ namespace TechVault.API.Services.Implementations
             var products = await _context.Products
                 .Include(p => p.Category)
                 .Include(p => p.ProductTags).ThenInclude(pt => pt.Tag)
-                .Include(p => p.Specification)
                 .AsNoTracking()
                 .Where(p => p.CategoryId == categoryId && p.IsActive)
                 .ToListAsync();
@@ -87,16 +84,6 @@ namespace TechVault.API.Services.Implementations
             var product = _mapper.Map<Product>(dto);
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
-
-            if (!string.IsNullOrEmpty(dto.SpecificationsJson))
-            {
-                product.Specification = new ProductSpecification
-                {
-                    Id = Guid.NewGuid(),
-                    ProductId = product.Id,
-                    SpecificationsJson = dto.SpecificationsJson
-                };
-            }
 
             if (dto.TagIds != null && dto.TagIds.Any())
             {
@@ -115,30 +102,12 @@ namespace TechVault.API.Services.Implementations
         public async Task<ProductResponseDto?> UpdateProductAsync(Guid id, UpdateProductDto dto)
         {
             var product = await _context.Products
-                .Include(p => p.Specification)
                 .Include(p => p.ProductTags)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (product == null) return null;
 
             _mapper.Map(dto, product);
-
-            if (dto.SpecificationsJson != null)
-            {
-                if (product.Specification != null)
-                {
-                    product.Specification.SpecificationsJson = dto.SpecificationsJson;
-                }
-                else
-                {
-                    product.Specification = new ProductSpecification
-                    {
-                        Id = Guid.NewGuid(),
-                        ProductId = product.Id,
-                        SpecificationsJson = dto.SpecificationsJson
-                    };
-                }
-            }
 
             if (dto.TagIds != null)
             {

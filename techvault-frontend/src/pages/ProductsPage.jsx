@@ -9,6 +9,7 @@ import './ProductsPage.css';
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -35,9 +36,8 @@ const ProductsPage = () => {
     setError(null);
     try {
       const data = await productService.getAll(filters);
-      // Backend returns a paginated result, usually { items: [], totalCount: X, ... }
-      // Or just an array if not paginated. I'll assume an array or check structure.
       setProducts(Array.isArray(data) ? data : data.items || []);
+      setTotalPages(data.totalPages || 1);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load products');
     } finally {
@@ -141,10 +141,10 @@ const ProductsPage = () => {
             >
               Previous
             </button>
-            <span className="page-info">Page {filters.pageNumber}</span>
+            <span className="page-info">Page {filters.pageNumber} of {totalPages}</span>
             <button 
               className="btn btn-outline" 
-              disabled={products.length < filters.pageSize}
+              disabled={filters.pageNumber >= totalPages}
               onClick={() => setFilters(prev => ({ ...prev, pageNumber: prev.pageNumber + 1 }))}
             >
               Next

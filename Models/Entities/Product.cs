@@ -41,7 +41,6 @@ namespace TechVault.API.Models.Entities
         public virtual Category Category { get; set; } = null!;
 
         // Navigation properties
-        public virtual ProductSpecification? Specification { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public virtual ICollection<ProductTag> ProductTags { get; set; } = new List<ProductTag>();
     }

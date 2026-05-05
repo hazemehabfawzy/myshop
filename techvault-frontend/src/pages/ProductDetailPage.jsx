@@ -100,16 +100,7 @@ const ProductDetailPage = () => {
             </Link>
           )}
 
-          <div className="detail-specs">
-            <h3>Specifications</h3>
-            <ul>
-              {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
-                <li key={key}>
-                  <strong>{key}:</strong> {value}
-                </li>
-              ))}
-            </ul>
-          </div>
+
 
           <div className="detail-tags">
             {product.tags && product.tags.map(tag => (

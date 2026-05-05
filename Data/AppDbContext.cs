@@ -11,7 +11,6 @@ namespace TechVault.API.Data
         public DbSet<CustomerProfile> CustomerProfiles { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<ProductSpecification> ProductSpecifications { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ServiceRequest> ServiceRequests { get; set; }
@@ -41,11 +40,7 @@ namespace TechVault.API.Data
                 .WithOne(p => p.Category)
                 .HasForeignKey(p => p.CategoryId);
 
-            // Product - ProductSpecification (One-to-One)
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Specification)
-                .WithOne(ps => ps.Product)
-                .HasForeignKey<ProductSpecification>(ps => ps.ProductId);
+
 
             // Order - OrderItem (One-to-Many)
             modelBuilder.Entity<Order>(entity =>

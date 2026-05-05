@@ -37,8 +37,7 @@ namespace TechVault.API.Helpers
             // Product
             CreateMap<Product, ProductResponseDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
-                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.ProductTags.Select(pt => pt.Tag.Name)))
-                .ForMember(dest => dest.Specifications, opt => opt.MapFrom(src => src.Specification != null ? JsonSerializer.Deserialize<Dictionary<string, string>>(src.Specification.SpecificationsJson, (JsonSerializerOptions?)null) : null));
+                .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.ProductTags.Select(pt => pt.Tag.Name)));
             CreateMap<CreateProductDto, Product>();
             CreateMap<UpdateProductDto, Product>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 

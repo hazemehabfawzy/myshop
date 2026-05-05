@@ -31,8 +31,6 @@ namespace TechVault.API.DTOs.Product
         [Required]
         public Guid CategoryId { get; set; }
 
-        public string? SpecificationsJson { get; set; }
-
         public List<Guid>? TagIds { get; set; }
     }
 
@@ -66,8 +64,6 @@ namespace TechVault.API.DTOs.Product
 
         public bool? IsActive { get; set; }
 
-        public string? SpecificationsJson { get; set; }
-
         public List<Guid>? TagIds { get; set; }
     }
 
@@ -87,6 +83,5 @@ namespace TechVault.API.DTOs.Product
         public string CategoryName { get; set; } = string.Empty;
         public Guid CategoryId { get; set; }
         public List<string> Tags { get; set; } = new List<string>();
-        public Dictionary<string, string>? Specifications { get; set; }
     }
 }
