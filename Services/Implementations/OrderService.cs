@@ -51,6 +51,11 @@ namespace TechVault.API.Services.Implementations
 
         public async Task<OrderResponseDto> CreateOrderAsync(Guid userId, CreateOrderDto dto)
         {
+            if (dto.PaymentMethod != "CashOnDelivery")
+            {
+                throw new ArgumentException("Only 'CashOnDelivery' is supported as a payment method.");
+            }
+
             var order = new Order
             {
                 Id = Guid.NewGuid(),

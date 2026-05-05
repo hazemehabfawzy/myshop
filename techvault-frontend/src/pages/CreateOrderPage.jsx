@@ -11,7 +11,7 @@ const CreateOrderPage = () => {
   
   const [selectedItems, setSelectedItems] = useState([]);
   const [shippingAddress, setShippingAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('CreditCard');
+  const [paymentMethod, setPaymentMethod] = useState('CashOnDelivery');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -216,11 +216,13 @@ const CreateOrderPage = () => {
 
               <div className="form-group">
                 <label>Payment Method</label>
-                <select className="form-control" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-                  <option value="CreditCard">Credit Card</option>
-                  <option value="PayPal">PayPal</option>
-                  <option value="CashOnDelivery">Cash on Delivery</option>
-                </select>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  value="Cash on Delivery" 
+                  readOnly 
+                  style={{ backgroundColor: 'var(--primary)', cursor: 'not-allowed', fontWeight: '600', color: 'var(--text)' }}
+                />
               </div>
 
               <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading || selectedItems.length === 0}>

@@ -54,6 +54,7 @@ namespace TechVault.API.Data
                 entity.Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
                 entity.Property(o => o.ShippingAddress).IsRequired();
                 entity.Property(o => o.PaymentMethod).IsRequired();
+                entity.ToTable(t => t.HasCheckConstraint("CK_Order_PaymentMethod", "PaymentMethod = 'CashOnDelivery'"));
                 entity.HasOne(o => o.User)
                       .WithMany(u => u.Orders)
                       .HasForeignKey(o => o.UserId)
