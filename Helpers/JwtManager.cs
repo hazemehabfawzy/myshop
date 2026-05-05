@@ -28,9 +28,9 @@ namespace TechVault.API.Helpers
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Email, user.Email),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("Username", user.Username),
+                new Claim("Email", user.Email),
                 new Claim(ClaimTypes.Role, user.Role)
             };
 

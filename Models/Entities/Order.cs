@@ -17,8 +17,7 @@ namespace TechVault.API.Models.Entities
         [Required, Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
-        [Required]
-        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public string Status { get; set; } = "Pending";
 
         [Required, MaxLength(500)]
         public string ShippingAddress { get; set; } = string.Empty;

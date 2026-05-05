@@ -26,9 +26,11 @@ namespace TechVault.API.DTOs.Auth
     public class LoginDto
     {
         [Required]
-        public string UsernameOrEmail { get; set; } = string.Empty;
+        [MaxLength(50)]
+        public string Username { get; set; } = string.Empty;
 
         [Required]
+        [MinLength(6)]
         public string Password { get; set; } = string.Empty;
     }
 
@@ -37,6 +39,7 @@ namespace TechVault.API.DTOs.Auth
         public string Username { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public string FullName { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
         public DateTime ExpiresAt { get; set; }
     }
 }

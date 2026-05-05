@@ -18,12 +18,12 @@ namespace TechVault.API.DTOs.ServiceRequest
         public string IssueDescription { get; set; } = string.Empty;
 
         [Required]
-        public ServiceType ServiceType { get; set; }
+        public string ServiceType { get; set; } = string.Empty;
     }
 
     public class UpdateServiceRequestDto
     {
-        public ServiceRequestStatus? Status { get; set; }
+        public string? Status { get; set; }
         public decimal? EstimatedCost { get; set; }
         public decimal? FinalCost { get; set; }
         public string? TechnicianNotes { get; set; }
@@ -39,12 +39,13 @@ namespace TechVault.API.DTOs.ServiceRequest
         public string Brand { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
         public string IssueDescription { get; set; } = string.Empty;
-        public ServiceType ServiceType { get; set; }
-        public ServiceRequestStatus Status { get; set; }
+        public string ServiceType { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public decimal? EstimatedCost { get; set; }
         public decimal? FinalCost { get; set; }
         public string? TechnicianNotes { get; set; }
         public DateTime ReceivedAt { get; set; }
+        public DateTime CreatedAt => ReceivedAt;
         public DateTime? CompletedAt { get; set; }
         public Guid? TechnicianId { get; set; }
         public string? TechnicianName { get; set; }

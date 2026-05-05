@@ -7,7 +7,7 @@ using TechVault.API.Services.Interfaces;
 namespace TechVault.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/service-requests")]
     [Authorize]
     public class ServiceRequestsController : BaseTechVaultController
     {
@@ -29,7 +29,11 @@ namespace TechVault.API.Controllers
         [HttpGet("my")]
         public async Task<ActionResult<IEnumerable<ServiceRequestResponseDto>>> GetMyRequests()
         {
-            var result = await _serviceRequestService.GetServiceRequestsByUserAsync(CurrentUserId);
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
+            var userId = Guid.Parse(userIdClaim);
+
+            var result = await _serviceRequestService.GetServiceRequestsByUserAsync(userId);
             return Ok(result);
         }
 
@@ -56,8 +60,8 @@ namespace TechVault.API.Controllers
         [Authorize(Roles = "Admin,Technician")]
         public async Task<ActionResult> UpdateStatus(Guid id, [FromBody] UpdateServiceRequestDto dto)
         {
-            if (!dto.Status.HasValue) return BadRequest(new { message = "Status is required." });
-            var result = await _serviceRequestService.UpdateServiceRequestStatusAsync(id, dto.Status.Value, dto.TechnicianNotes);
+            if (string.IsNullOrEmpty(dto.Status)) return BadRequest(new { message = "Status is required." });
+            var result = await _serviceRequestService.UpdateServiceRequestStatusAsync(id, dto.Status, dto.TechnicianNotes);
             if (!result) return NotFound();
             return NoContent();
         }

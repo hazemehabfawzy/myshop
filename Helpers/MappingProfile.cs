@@ -50,11 +50,11 @@ namespace TechVault.API.Helpers
             // Order
             CreateMap<Order, OrderResponseDto>();
             CreateMap<OrderItem, OrderItemResponseDto>()
-                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name));
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : ""));
 
             // ServiceRequest
             CreateMap<ServiceRequest, ServiceRequestResponseDto>()
-                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.User.CustomerProfile != null ? src.User.CustomerProfile.FullName : ""))
+                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.User != null && src.User.CustomerProfile != null ? src.User.CustomerProfile.FullName : ""))
                 .ForMember(dest => dest.TechnicianName, opt => opt.MapFrom(src => src.Technician != null && src.Technician.CustomerProfile != null ? src.Technician.CustomerProfile.FullName : ""));
             CreateMap<CreateServiceRequestDto, ServiceRequest>();
             CreateMap<UpdateServiceRequestDto, ServiceRequest>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));

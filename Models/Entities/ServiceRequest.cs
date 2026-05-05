@@ -26,10 +26,10 @@ namespace TechVault.API.Models.Entities
         public string IssueDescription { get; set; } = string.Empty;
 
         [Required]
-        public ServiceType ServiceType { get; set; }
+        public string ServiceType { get; set; } = string.Empty;
 
         [Required]
-        public ServiceRequestStatus Status { get; set; } = ServiceRequestStatus.Received;
+        public string Status { get; set; } = "Received";
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? EstimatedCost { get; set; }

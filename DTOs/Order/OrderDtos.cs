@@ -30,7 +30,7 @@ namespace TechVault.API.DTOs.Order
     public class UpdateOrderStatusDto
     {
         [Required]
-        public OrderStatus Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 
     public class OrderResponseDto
@@ -38,8 +38,9 @@ namespace TechVault.API.DTOs.Order
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime CreatedAt => OrderDate;
         public decimal TotalAmount { get; set; }
-        public OrderStatus Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public string ShippingAddress { get; set; } = string.Empty;
         public string PaymentMethod { get; set; } = string.Empty;
         public string? Notes { get; set; }

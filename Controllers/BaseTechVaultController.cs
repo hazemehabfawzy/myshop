@@ -9,7 +9,7 @@ namespace TechVault.API.Controllers
         {
             get
             {
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userIdClaim = User.FindFirst("UserId");
                 if (userIdClaim == null) return Guid.Empty;
                 return Guid.Parse(userIdClaim.Value);
             }

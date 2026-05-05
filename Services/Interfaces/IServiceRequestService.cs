@@ -9,7 +9,7 @@ namespace TechVault.API.Services.Interfaces
         Task<IEnumerable<ServiceRequestResponseDto>> GetServiceRequestsByUserAsync(Guid userId);
         Task<ServiceRequestResponseDto?> GetServiceRequestByIdAsync(Guid id);
         Task<ServiceRequestResponseDto> CreateServiceRequestAsync(Guid userId, CreateServiceRequestDto dto);
-        Task<bool> UpdateServiceRequestStatusAsync(Guid id, ServiceRequestStatus status, string? technicianNotes);
+        Task<bool> UpdateServiceRequestStatusAsync(Guid id, string status, string? technicianNotes);
         Task<bool> AssignTechnicianAsync(Guid requestId, Guid technicianId);
     }
 }

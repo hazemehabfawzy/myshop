@@ -56,46 +56,46 @@ namespace TechVault.API.Services.Implementations
                 Id = Guid.NewGuid(),
                 UserId = userId,
                 OrderDate = DateTime.UtcNow,
+                Status = "Pending",
                 ShippingAddress = dto.ShippingAddress,
                 PaymentMethod = dto.PaymentMethod,
                 Notes = dto.Notes,
-                Status = OrderStatus.Pending
+                OrderItems = new List<OrderItem>()
             };
 
-            decimal totalAmount = 0;
-
+            decimal total = 0;
             foreach (var item in dto.Items)
             {
                 var product = await _context.Products.FindAsync(item.ProductId);
-                if (product == null || product.StockQuantity < item.Quantity)
-                {
-                    throw new Exception($"Product {item.ProductId} not found or insufficient stock.");
-                }
+                if (product == null)
+                    throw new Exception($"Product {item.ProductId} not found");
+                if (product.StockQuantity < item.Quantity)
+                    throw new Exception($"Insufficient stock for {product.Name}");
 
                 var orderItem = new OrderItem
                 {
                     Id = Guid.NewGuid(),
                     OrderId = order.Id,
                     ProductId = item.ProductId,
+                    Product = product,
                     Quantity = item.Quantity,
                     UnitPrice = product.Price
                 };
-
-                totalAmount += orderItem.UnitPrice * orderItem.Quantity;
-                product.StockQuantity -= item.Quantity; // Decrement stock
-
+                total += orderItem.UnitPrice * orderItem.Quantity;
                 order.OrderItems.Add(orderItem);
+
+                // Reduce stock
+                product.StockQuantity -= item.Quantity;
             }
 
-            order.TotalAmount = totalAmount;
-
+            order.TotalAmount = total;
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             return _mapper.Map<OrderResponseDto>(order);
         }
 
-        public async Task<bool> UpdateOrderStatusAsync(Guid orderId, OrderStatus status)
+        public async Task<bool> UpdateOrderStatusAsync(Guid orderId, string status)
         {
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null) return false;
@@ -117,9 +117,9 @@ namespace TechVault.API.Services.Implementations
             if (!isAdmin && order.UserId != userId) return false;
 
             // Can only cancel if Pending or Processing
-            if (order.Status != OrderStatus.Pending && order.Status != OrderStatus.Processing) return false;
+            if (order.Status != "Pending" && order.Status != "Processing") return false;
 
-            order.Status = OrderStatus.Cancelled;
+            order.Status = "Cancelled";
 
             // Refund stock
             foreach (var item in order.OrderItems)

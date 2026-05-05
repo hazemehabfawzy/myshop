@@ -103,7 +103,19 @@ builder.Services.AddScoped<ITagService, TagService>();
 // Helpers
 builder.Services.AddScoped<JwtManager>();
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
+});
+
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors("AllowFrontend");
 
 // Database Migration & Seeding with Retry Logic for Docker
 using (var scope = app.Services.CreateScope())

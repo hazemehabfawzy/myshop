@@ -52,6 +52,7 @@ namespace TechVault.API.Controllers
             var token = _jwtManager.GenerateToken(user, out var expiresAt);
             var response = _mapper.Map<AuthResponseDto>(user);
             response.ExpiresAt = expiresAt;
+            response.Token = token;
 
             Response.Headers.Append("X-Access-Token", token);
 
@@ -63,16 +64,18 @@ namespace TechVault.API.Controllers
         {
             var user = await _context.Users
                 .Include(u => u.CustomerProfile)
-                .FirstOrDefaultAsync(u => u.Username == dto.UsernameOrEmail || u.Email == dto.UsernameOrEmail);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == dto.Username);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
             {
-                return Unauthorized(new { message = "Invalid credentials" });
+                return Unauthorized(new { message = "Invalid username or password" });
             }
 
             var token = _jwtManager.GenerateToken(user, out var expiresAt);
             var response = _mapper.Map<AuthResponseDto>(user);
             response.ExpiresAt = expiresAt;
+            response.Token = token;
 
             Response.Headers.Append("X-Access-Token", token);
 

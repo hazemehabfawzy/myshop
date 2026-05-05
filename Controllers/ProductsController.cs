@@ -18,9 +18,9 @@ namespace TechVault.API.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult> GetAll([FromQuery] Guid? categoryId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? brand, [FromQuery] bool? inStock, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+        public async Task<ActionResult> GetAll([FromQuery] Guid? categoryId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? brand, [FromQuery] string? search, [FromQuery] bool? inStock, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
-            var result = await _productService.GetAllProductsAsync(categoryId, minPrice, maxPrice, brand, inStock, pageNumber, pageSize);
+            var result = await _productService.GetAllProductsAsync(categoryId, minPrice, maxPrice, brand, search, inStock, pageNumber, pageSize);
             return Ok(result);
         }
 

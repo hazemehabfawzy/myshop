@@ -47,37 +47,45 @@ namespace TechVault.API.Data
                 .WithOne(ps => ps.Product)
                 .HasForeignKey<ProductSpecification>(ps => ps.ProductId);
 
-            // User - Order (One-to-Many)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.Orders)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId);
-
             // Order - OrderItem (One-to-Many)
-            modelBuilder.Entity<Order>()
-                .HasMany(o => o.OrderItems)
-                .WithOne(oi => oi.Order)
-                .HasForeignKey(oi => oi.OrderId);
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(o => o.Id);
+                entity.Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
+                entity.Property(o => o.ShippingAddress).IsRequired();
+                entity.Property(o => o.PaymentMethod).IsRequired();
+                entity.HasOne(o => o.User)
+                      .WithMany(u => u.Orders)
+                      .HasForeignKey(o => o.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+                entity.HasMany(o => o.OrderItems)
+                      .WithOne(oi => oi.Order)
+                      .HasForeignKey(oi => oi.OrderId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
 
-            // Product - OrderItem (One-to-Many)
-            modelBuilder.Entity<Product>()
-                .HasMany(p => p.OrderItems)
-                .WithOne(oi => oi.Product)
-                .HasForeignKey(oi => oi.ProductId);
+            // OrderItem
+            modelBuilder.Entity<OrderItem>(entity =>
+            {
+                entity.HasKey(oi => oi.Id);
+                entity.Property(oi => oi.UnitPrice).HasColumnType("decimal(18,2)");
+                entity.HasOne(oi => oi.Product)
+                      .WithMany(p => p.OrderItems)
+                      .HasForeignKey(oi => oi.ProductId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
 
-            // User - ServiceRequest (Customer, One-to-Many)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.CustomerServiceRequests)
-                .WithOne(sr => sr.User)
-                .HasForeignKey(sr => sr.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // User - ServiceRequest (Technician, One-to-Many, Nullable)
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.TechnicianServiceRequests)
-                .WithOne(sr => sr.Technician)
-                .HasForeignKey(sr => sr.TechnicianId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // ServiceRequest
+            modelBuilder.Entity<ServiceRequest>(entity =>
+            {
+                entity.HasKey(sr => sr.Id);
+                entity.Property(sr => sr.EstimatedCost).HasColumnType("decimal(18,2)");
+                entity.Property(sr => sr.FinalCost).HasColumnType("decimal(18,2)");
+                entity.HasOne(sr => sr.User)
+                      .WithMany(u => u.CustomerServiceRequests)
+                      .HasForeignKey(sr => sr.UserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
 
             // Product - Tag (Many-to-Many)
             modelBuilder.Entity<ProductTag>()

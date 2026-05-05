@@ -48,6 +48,10 @@ namespace TechVault.API.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderResponseDto>> Create(CreateOrderDto dto)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            Console.WriteLine($"Items count: {dto.Items?.Count}");
+            Console.WriteLine($"Address: {dto.ShippingAddress}");
+            
             try
             {
                 var result = await _orderService.CreateOrderAsync(CurrentUserId, dto);

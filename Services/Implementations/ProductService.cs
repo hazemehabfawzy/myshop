@@ -20,7 +20,7 @@ namespace TechVault.API.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<PaginatedList<ProductResponseDto>> GetAllProductsAsync(Guid? categoryId, decimal? minPrice, decimal? maxPrice, string? brand, bool? inStock, int pageNumber, int pageSize)
+        public async Task<PaginatedList<ProductResponseDto>> GetAllProductsAsync(Guid? categoryId, decimal? minPrice, decimal? maxPrice, string? brand, string? search, bool? inStock, int pageNumber, int pageSize)
         {
             var query = _context.Products
                 .Include(p => p.Category)
@@ -40,6 +40,12 @@ namespace TechVault.API.Services.Implementations
 
             if (!string.IsNullOrEmpty(brand))
                 query = query.Where(p => p.Brand.Contains(brand));
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.Trim();
+                query = query.Where(p => p.Name.Contains(search) || p.Brand.Contains(search) || (p.Model != null && p.Model.Contains(search)));
+            }
 
             if (inStock.HasValue && inStock.Value)
                 query = query.Where(p => p.StockQuantity > 0);

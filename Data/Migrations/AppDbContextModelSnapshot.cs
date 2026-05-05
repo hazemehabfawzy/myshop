@@ -105,8 +105,9 @@ namespace TechVault.API.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -276,11 +277,13 @@ namespace TechVault.API.Data.Migrations
                     b.Property<DateTime>("ReceivedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ServiceType")
-                        .HasColumnType("int");
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("TechnicianId")
                         .HasColumnType("uniqueidentifier");
@@ -372,7 +375,7 @@ namespace TechVault.API.Data.Migrations
                     b.HasOne("TechVault.API.Models.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -389,7 +392,7 @@ namespace TechVault.API.Data.Migrations
                     b.HasOne("TechVault.API.Models.Entities.Product", "Product")
                         .WithMany("OrderItems")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -442,8 +445,7 @@ namespace TechVault.API.Data.Migrations
                 {
                     b.HasOne("TechVault.API.Models.Entities.User", "Technician")
                         .WithMany("TechnicianServiceRequests")
-                        .HasForeignKey("TechnicianId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("TechnicianId");
 
                     b.HasOne("TechVault.API.Models.Entities.User", "User")
                         .WithMany("CustomerServiceRequests")

@@ -9,7 +9,7 @@ namespace TechVault.API.Services.Interfaces
         Task<IEnumerable<OrderResponseDto>> GetOrdersByUserAsync(Guid userId);
         Task<OrderResponseDto?> GetOrderByIdAsync(Guid id);
         Task<OrderResponseDto> CreateOrderAsync(Guid userId, CreateOrderDto dto);
-        Task<bool> UpdateOrderStatusAsync(Guid orderId, OrderStatus status);
+        Task<bool> UpdateOrderStatusAsync(Guid orderId, string status);
         Task<bool> CancelOrderAsync(Guid orderId, Guid userId, bool isAdmin);
     }
 }

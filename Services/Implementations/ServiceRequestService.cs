@@ -58,7 +58,7 @@ namespace TechVault.API.Services.Implementations
             request.Id = Guid.NewGuid();
             request.UserId = userId;
             request.ReceivedAt = DateTime.UtcNow;
-            request.Status = ServiceRequestStatus.Received;
+            request.Status = "Received";
 
             _context.ServiceRequests.Add(request);
             await _context.SaveChangesAsync();
@@ -66,7 +66,7 @@ namespace TechVault.API.Services.Implementations
             return _mapper.Map<ServiceRequestResponseDto>(request);
         }
 
-        public async Task<bool> UpdateServiceRequestStatusAsync(Guid id, ServiceRequestStatus status, string? technicianNotes)
+        public async Task<bool> UpdateServiceRequestStatusAsync(Guid id, string status, string? technicianNotes)
         {
             var request = await _context.ServiceRequests.FindAsync(id);
             if (request == null) return false;
@@ -75,7 +75,7 @@ namespace TechVault.API.Services.Implementations
             if (technicianNotes != null)
                 request.TechnicianNotes = technicianNotes;
 
-            if (status == ServiceRequestStatus.Completed)
+            if (status == "Completed")
                 request.CompletedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
