@@ -1,0 +1,92 @@
+========================================================================
+             TECHVAULT RUNNING INSTRUCTIONS - REAL & CORRECT
+========================================================================
+
+Since your TechVault project is built using an ASP.NET Core (.NET 8) Web API
+backend and a React (Vite) frontend with a SQL Server database, follow these
+exact, correct steps to run the application on your Windows machine.
+
+------------------------------------------------------------------------
+System Architecture
+------------------------------------------------------------------------
+* Backend:   ASP.NET Core Web API (.NET 8) in the root folder
+* Frontend:  React + Vite in the "/techvault-frontend" folder
+* Database:  Microsoft SQL Server running inside Docker
+
+------------------------------------------------------------------------
+Requirements
+------------------------------------------------------------------------
+1. Docker Desktop (running)
+2. Node.js (v18 or higher)
+3. .NET 8 SDK (if running backend locally without Docker)
+
+------------------------------------------------------------------------
+METHOD A — RUN USING DOCKER & LOCAL FRONTEND (RECOMMENDED)
+------------------------------------------------------------------------
+This is the easiest and cleanest way to run the database and backend API.
+
+Step 1: Open Windows Command Prompt (cmd.exe) or PowerShell in the root:
+  cd d:\projects\myshop
+
+Step 2: Start the SQL Server Database and Backend API in Docker:
+  docker compose up -d
+
+  * This will download, build, and start the containers.
+  * Backend API runs on: http://localhost:8080
+  * Swagger documentation: http://localhost:8080/swagger
+
+Step 3: In the same terminal (or a new one), navigate to the frontend:
+  cd d:\projects\myshop\techvault-frontend
+
+Step 4: Install frontend dependencies:
+  npm install
+
+Step 5: Start the frontend development server:
+  npm run dev
+
+  * Frontend runs on: http://localhost:5173
+
+---
+
+------------------------------------------------------------------------
+METHOD B — RUN EVERYTHING LOCALLY (WITHOUT DOCKER BACKEND)
+------------------------------------------------------------------------
+If you prefer running the C# API locally on your host machine:
+
+Step 1: Start ONLY the SQL Server database in Docker:
+  docker compose up -d db
+
+Step 2: In the root folder (d:\projects\myshop), run the .NET Web API:
+  dotnet run
+
+  * Backend API runs on: http://localhost:5000 (or as configured)
+
+Step 3: Open a NEW terminal, navigate to frontend and start it:
+  cd d:\projects\myshop\techvault-frontend
+  npm run dev
+
+  * Frontend runs on: http://localhost:5173
+
+---
+
+------------------------------------------------------------------------
+Available Login Accounts
+------------------------------------------------------------------------
+Use these pre-configured user credentials to log in:
+
+  * Username: admin  | Password: 123456  (Role: Admin)
+  * Username: tech   | Password: 123456  (Role: Technician)
+  * Username: hazem  | Password: 123456  (Role: Customer)
+
+------------------------------------------------------------------------
+Notes & Troubleshooting
+------------------------------------------------------------------------
+* Stop the Docker containers:
+  docker compose down
+
+* Check Docker logs:
+  docker compose logs -f api
+
+* To stop the frontend server, press: CTRL + C
+
+========================================================================

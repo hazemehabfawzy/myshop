@@ -20,6 +20,7 @@ const EditProductPage = () => {
     description: '',
     price: '',
     stockQuantity: '',
+    stockStatus: 'InStock',
     brand: '',
     model: '',
     sku: '',
@@ -43,6 +44,7 @@ const EditProductPage = () => {
           description: product.description,
           price: product.price,
           stockQuantity: product.stockQuantity,
+          stockStatus: product.stockStatus || 'InStock',
           brand: product.brand,
           model: product.model,
           sku: product.sku || '',
@@ -85,12 +87,33 @@ const EditProductPage = () => {
     setSaving(true);
     setError('');
 
+    // Clean empty strings and parse numbers properly
+    const submitData = {
+      ...formData,
+      imageUrl: formData.imageUrl?.trim() || null,
+      model: formData.model?.trim() || null,
+      sku: formData.sku?.trim() || null,
+      description: formData.description?.trim() || null,
+      price: parseFloat(formData.price),
+      stockQuantity: parseInt(formData.stockQuantity)
+    };
+
     try {
-      await productService.update(id, formData);
+      await productService.update(id, submitData);
       setSuccess('Product updated successfully!');
       setTimeout(() => navigate(`/products/${id}`), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update product');
+      const data = err.response?.data;
+      let errMsg = 'Failed to update product';
+      if (data) {
+        if (data.message) {
+          errMsg = data.message;
+        } else if (data.errors) {
+          const errors = Object.values(data.errors).flat();
+          errMsg = errors.join(', ');
+        }
+      }
+      setError(errMsg);
     } finally {
       setSaving(false);
     }
@@ -158,6 +181,15 @@ const EditProductPage = () => {
               <label>Stock Quantity</label>
               <input name="stockQuantity" type="number" className={`form-control ${fieldErrors.stockQuantity ? 'error' : ''}`} value={formData.stockQuantity} onChange={handleChange} />
               {fieldErrors.stockQuantity && <p className="error-text">{fieldErrors.stockQuantity}</p>}
+            </div>
+
+            <div className="form-group">
+              <label>Stock Status</label>
+              <select name="stockStatus" className="form-control" value={formData.stockStatus} onChange={handleChange}>
+                <option value="InStock">In Stock</option>
+                <option value="LowStock">Low Stock</option>
+                <option value="OutOfStock">Out of Stock</option>
+              </select>
             </div>
           </div>
 

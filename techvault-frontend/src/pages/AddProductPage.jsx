@@ -15,6 +15,7 @@ const AddProductPage = () => {
     description: '',
     price: '',
     stockQuantity: '',
+    stockStatus: 'InStock',
     brand: '',
     model: '',
     sku: '',
@@ -64,12 +65,33 @@ const AddProductPage = () => {
     setError('');
     setSuccess('');
 
+    // Clean empty strings and parse numbers properly
+    const submitData = {
+      ...formData,
+      imageUrl: formData.imageUrl?.trim() || null,
+      model: formData.model?.trim() || null,
+      sku: formData.sku?.trim() || null,
+      description: formData.description?.trim() || null,
+      price: parseFloat(formData.price),
+      stockQuantity: parseInt(formData.stockQuantity)
+    };
+
     try {
-      await productService.create(formData);
-      setSuccess('Product created successfully!');
-      setTimeout(() => navigate('/products'), 2000);
+      await productService.create(submitData);
+      setSuccess('Product created successfully! Redirecting to stock management...');
+      setTimeout(() => navigate('/admin/stock'), 2500);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create product');
+      const data = err.response?.data;
+      let errMsg = 'Failed to create product';
+      if (data) {
+        if (data.message) {
+          errMsg = data.message;
+        } else if (data.errors) {
+          const errors = Object.values(data.errors).flat();
+          errMsg = errors.join(', ');
+        }
+      }
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
@@ -121,6 +143,15 @@ const AddProductPage = () => {
               <label>Stock Quantity</label>
               <input name="stockQuantity" type="number" className={`form-control ${fieldErrors.stockQuantity ? 'error' : ''}`} value={formData.stockQuantity} onChange={handleChange} />
               {fieldErrors.stockQuantity && <p className="error-text">{fieldErrors.stockQuantity}</p>}
+            </div>
+
+            <div className="form-group">
+              <label>Stock Status</label>
+              <select name="stockStatus" className="form-control" value={formData.stockStatus} onChange={handleChange}>
+                <option value="InStock">In Stock</option>
+                <option value="LowStock">Low Stock</option>
+                <option value="OutOfStock">Out of Stock</option>
+              </select>
             </div>
           </div>
 

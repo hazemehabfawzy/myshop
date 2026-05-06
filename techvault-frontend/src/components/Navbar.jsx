@@ -31,6 +31,7 @@ const Navbar = () => {
               {isAdmin && (
                 <>
                   <NavLink to="/admin/products/new" className={({ isActive }) => isActive ? 'active' : ''}>+ Add Product</NavLink>
+                  <NavLink to="/admin/stock" className={({ isActive }) => isActive ? 'active' : ''}>Stock Management</NavLink>
                   <NavLink to="/orders" className={({ isActive }) => isActive ? 'active' : ''}>All Orders</NavLink>
                 </>
               )}

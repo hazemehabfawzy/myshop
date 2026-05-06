@@ -85,6 +85,21 @@ namespace TechVault.API.Services.Implementations
             product.Id = Guid.NewGuid();
             product.CreatedAt = DateTime.UtcNow;
 
+            // Sync quantity and status manually with exact requested thresholds
+            if (product.StockQuantity <= 0)
+            {
+                product.StockQuantity = 0;
+                product.StockStatus = StockStatus.OutOfStock;
+            }
+            else if (product.StockQuantity <= 5)
+            {
+                product.StockStatus = StockStatus.LowStock;
+            }
+            else
+            {
+                product.StockStatus = StockStatus.InStock;
+            }
+
             if (dto.TagIds != null && dto.TagIds.Any())
             {
                 foreach (var tagId in dto.TagIds)
@@ -107,8 +122,34 @@ namespace TechVault.API.Services.Implementations
 
             if (product == null) return null;
 
-            _mapper.Map(dto, product);
+            // Apply manual mapping for partial updates to avoid AutoMapper value-type coercion bugs (like CategoryId mapping to Guid.Empty)
+            if (dto.Name != null) product.Name = dto.Name;
+            if (dto.Description != null) product.Description = dto.Description;
+            if (dto.Price.HasValue) product.Price = dto.Price.Value;
+            if (dto.StockQuantity.HasValue) product.StockQuantity = dto.StockQuantity.Value;
+            if (dto.Brand != null) product.Brand = dto.Brand;
+            if (dto.Model != null) product.Model = dto.Model;
+            if (dto.SKU != null) product.SKU = dto.SKU;
+            if (dto.ImageUrl != null) product.ImageUrl = dto.ImageUrl;
+            if (dto.CategoryId.HasValue) product.CategoryId = dto.CategoryId.Value;
 
+            // Sync quantity and status manually with exact requested thresholds
+            // This ensures StockStatus is always correctly calculated regardless of current state
+            if (product.StockQuantity <= 0)
+            {
+                product.StockQuantity = 0;
+                product.StockStatus = StockStatus.OutOfStock;
+            }
+            else if (product.StockQuantity <= 5)
+            {
+                product.StockStatus = StockStatus.LowStock;
+            }
+            else
+            {
+                product.StockStatus = StockStatus.InStock;
+            }
+
+            // Handle tag updates if provided
             if (dto.TagIds != null)
             {
                 product.ProductTags.Clear();
@@ -118,7 +159,16 @@ namespace TechVault.API.Services.Implementations
                 }
             }
 
+            // Handle IsActive updates if provided
+            if (dto.IsActive.HasValue)
+            {
+                product.IsActive = dto.IsActive.Value;
+            }
+
+            // Save changes
             await _context.SaveChangesAsync();
+
+            // Return the updated product response with fresh mapping
             return _mapper.Map<ProductResponseDto>(product);
         }
 

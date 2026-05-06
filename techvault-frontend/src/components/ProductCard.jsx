@@ -11,9 +11,9 @@ const ProductCard = ({ product }) => {
   );
 
   const getStockStatus = () => {
-    if (stockQuantity <= 0) return { label: 'Out of Stock', class: 'badge-cancelled' };
-    if (stockQuantity < 10) return { label: 'Low Stock', class: 'badge-shipped' };
-    return { label: 'In Stock', class: 'badge-delivered' };
+    if (stockQuantity <= 0 || product.stockStatus === 'OutOfStock') return { label: 'Out of Stock', class: 'badge-cancelled', disabled: true };
+    if (stockQuantity < 10 || product.stockStatus === 'LowStock') return { label: 'Low Stock', class: 'badge-shipped', disabled: false };
+    return { label: 'In Stock', class: 'badge-delivered', disabled: false };
   };
 
   const stockStatus = getStockStatus();
@@ -30,9 +30,15 @@ const ProductCard = ({ product }) => {
           <span className={`badge ${stockStatus.class}`}>{stockStatus.label}</span>
           <span className="product-price">{formatPrice(price)}</span>
         </div>
-        <Link to={`/products/${id}`} className="btn btn-primary btn-block">
-          View Details
-        </Link>
+        {stockStatus.disabled ? (
+          <button className="btn btn-primary btn-block" disabled style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+            Out of Stock
+          </button>
+        ) : (
+          <Link to={`/products/${id}`} className="btn btn-primary btn-block">
+            View Details
+          </Link>
+        )}
       </div>
     </div>
   );

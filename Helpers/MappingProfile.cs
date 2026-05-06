@@ -38,8 +38,12 @@ namespace TechVault.API.Helpers
             CreateMap<Product, ProductResponseDto>()
                 .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.ProductTags.Select(pt => pt.Tag.Name)));
-            CreateMap<CreateProductDto, Product>();
-            CreateMap<UpdateProductDto, Product>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<CreateProductDto, Product>()
+                .ForMember(dest => dest.StockStatus, opt => opt.Ignore());
+            CreateMap<UpdateProductDto, Product>()
+                .ForMember(dest => dest.StockStatus, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             // Tag
             CreateMap<Tag, TagResponseDto>()

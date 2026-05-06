@@ -53,17 +53,43 @@ namespace TechVault.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductResponseDto>> Create(CreateProductDto dto)
         {
-            var result = await _productService.CreateProductAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                var errorMsg = string.Join(", ", errors);
+                Console.WriteLine($"[ProductsController ERROR] ModelState invalid during product creation: {errorMsg}");
+                return BadRequest(new { message = errorMsg });
+            }
+
+            try
+            {
+                var result = await _productService.CreateProductAsync(dto);
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            }
+            catch (Exception ex)
+            {
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                Console.WriteLine($"[ProductsController ERROR] Create product failed: {ex.Message}. Inner Exception: {innerMsg}");
+                return BadRequest(new { message = ex.Message, innerMessage = innerMsg });
+            }
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductResponseDto>> Update(Guid id, UpdateProductDto dto)
         {
-            var result = await _productService.UpdateProductAsync(id, dto);
-            if (result == null) return NotFound();
-            return Ok(result);
+            try
+            {
+                var result = await _productService.UpdateProductAsync(id, dto);
+                if (result == null) return NotFound(new { message = "Product not found" });
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                Console.WriteLine($"[ProductsController ERROR] Update product failed: {ex.Message}. Stack: {ex.StackTrace}. Inner Exception: {innerMsg}");
+                return BadRequest(new { success = false, message = ex.Message, innerMessage = innerMsg });
+            }
         }
 
         [HttpDelete("{id}")]

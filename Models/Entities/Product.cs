@@ -20,6 +20,8 @@ namespace TechVault.API.Models.Entities
         [Required]
         public int StockQuantity { get; set; }
 
+        public StockStatus StockStatus { get; set; } = StockStatus.InStock;
+
         [Required, MaxLength(100)]
         public string Brand { get; set; } = string.Empty;
 

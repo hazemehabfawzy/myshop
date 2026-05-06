@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TechVault.API.Data;
 using TechVault.API.DTOs.Order;
 using TechVault.API.Models.Entities;
 using TechVault.API.Services.Interfaces;
@@ -12,10 +14,12 @@ namespace TechVault.API.Controllers
     public class OrdersController : BaseTechVaultController
     {
         private readonly IOrderService _orderService;
+        private readonly AppDbContext _context;
 
-        public OrdersController(IOrderService orderService)
+        public OrdersController(IOrderService orderService, AppDbContext context)
         {
             _orderService = orderService;
+            _context = context;
         }
 
         [HttpGet]
@@ -49,17 +53,39 @@ namespace TechVault.API.Controllers
         public async Task<ActionResult<OrderResponseDto>> Create(CreateOrderDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            Console.WriteLine($"Items count: {dto.Items?.Count}");
-            Console.WriteLine($"Address: {dto.ShippingAddress}");
+
+            var userId = CurrentUserId;
+            Console.WriteLine($"[OrdersController DEBUG] Resolved userId: '{userId}'");
+            foreach (var claim in User.Claims)
+            {
+                Console.WriteLine($"[OrdersController DEBUG] Claim: Type='{claim.Type}', Value='{claim.Value}'");
+            }
+
+            if (userId == Guid.Empty)
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            // Verify that user exists in dbo.Users database table before inserting
+            var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+            if (!userExists)
+            {
+                Console.WriteLine($"[OrdersController ERROR] UserId '{userId}' does not exist in the database!");
+                return Unauthorized(new { message = "User does not exist. Please redirect to login." });
+            }
+
+            Console.WriteLine($"[OrdersController] Creating order for user {userId}. Items count: {dto.Items?.Count}, Address: {dto.ShippingAddress}, PaymentMethod: {dto.PaymentMethod}");
             
             try
             {
-                var result = await _orderService.CreateOrderAsync(CurrentUserId, dto);
+                var result = await _orderService.CreateOrderAsync(userId, dto);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                Console.WriteLine($"[OrdersController ERROR] Order creation failed. Message: {ex.Message}. Inner message: {innerMsg}");
+                return BadRequest(new { message = ex.Message, innerMessage = innerMsg });
             }
         }
 

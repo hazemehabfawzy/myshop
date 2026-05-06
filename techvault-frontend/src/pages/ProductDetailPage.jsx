@@ -65,10 +65,12 @@ const ProductDetailPage = () => {
 
           <div className="detail-price-section">
             <span className="detail-price">{formatPrice(product.price)}</span>
-            {product.stockQuantity > 0 ? (
-              <span className="badge badge-delivered">In Stock ({product.stockQuantity} available)</span>
-            ) : (
+            {product.stockQuantity <= 0 || product.stockStatus === 'OutOfStock' ? (
               <span className="badge badge-cancelled">Out of Stock</span>
+            ) : product.stockQuantity < 10 || product.stockStatus === 'LowStock' ? (
+              <span className="badge badge-shipped">Low Stock ({product.stockQuantity} available)</span>
+            ) : (
+              <span className="badge badge-delivered">In Stock ({product.stockQuantity} available)</span>
             )}
           </div>
 
@@ -76,19 +78,19 @@ const ProductDetailPage = () => {
             <div className="quantity-selector">
               <button 
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                disabled={product.stockQuantity === 0}
+                disabled={product.stockQuantity <= 0 || product.stockStatus === 'OutOfStock'}
               >-</button>
               <span>{quantity}</span>
               <button 
                 onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}
-                disabled={product.stockQuantity === 0}
+                disabled={product.stockQuantity <= 0 || product.stockStatus === 'OutOfStock'}
               >+</button>
             </div>
             
             <button 
               className="btn btn-primary btn-lg flex-grow"
               onClick={handleAddToOrder}
-              disabled={product.stockQuantity === 0}
+              disabled={product.stockQuantity <= 0 || product.stockStatus === 'OutOfStock'}
             >
               Add to Order
             </button>

@@ -1,94 +1,107 @@
-# 🚀 TechVault Electronic Shop API
+# 🌌 TechVault — Premium Electronics & Repair Hub
 
-**TechVault** is a premium, enterprise-grade ASP.NET Core 10 Web API designed for a modern electronics retailer and repair specialist. It provides a robust backend infrastructure for managing high-end hardware sales, repair services, and background maintenance tasks.
-
----
-
-## 🌟 Key Features
-
-- **🛍️ Comprehensive Catalog**: Manage multi-level categories, products, and tags for a seamless browsing experience.
-- **🛠️ Service Requests**: Specialized system for tracking repair services and custom PC builds.
-- **🔐 Secure Authentication**: Role-based access control (Admin, Technician, Customer) powered by JWT and BCrypt hashing.
-- **📦 Containerized Workflow**: Fully Dockerized environment for consistent deployment across any system.
-- **⏰ Background Automation**: Leverages Hangfire for automated stock reporting and order monitoring.
-- **📊 Optimized Mapping**: Efficient data transfer using AutoMapper for clean architectural separation.
+**TechVault** is an enterprise-grade, full-stack stock management and repair service tracking platform. Built with a high-performance **ASP.NET Core Web API** backend and a sleek **React (Vite)** frontend, TechVault provides standard and admin dashboards to purchase flagship hardware, manage inventory levels in real-time, and coordinate technical service requests.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Component | Technology |
-| :--- | :--- |
-| **Framework** | .NET 10 (ASP.NET Core) |
-| **ORM** | Entity Framework Core 10 |
-| **Database** | Microsoft SQL Server 2022 |
-| **Authentication** | JWT Bearer Tokens |
-| **Background Jobs** | Hangfire |
-| **API Docs** | Swagger / OpenAPI |
-| **Containerization** | Docker & Docker Compose |
+TechVault's enterprise stack comprises:
+
+*   **Backend**: ASP.NET Core Web API (.NET 8)
+*   **Frontend**: React (Vite, Vanilla CSS, Responsive Components)
+*   **Database**: Microsoft SQL Server 2022
+*   **Authentication**: Role-Based Authorization using JWT (JSON Web Tokens)
+*   **Background Jobs**: Hangfire (Database automations and stock reports)
+*   **Mapping**: AutoMapper (DTO architectural separation)
+*   **Containerization**: Docker & Docker Compose
 
 ---
 
-## 🚀 Quick Start (Docker)
+## 🌟 Key Features
 
-The fastest way to get TechVault up and running is using Docker Compose.
+*   **🛍️ Premium Inventory Management**: Catalog browsing with advanced search and real-time visual stock status indicators (In Stock, Low Stock, and Out of Stock badges).
+*   **📊 Real-time Stock Control**: Safe partial updates with mapping guards protecting database references.
+*   **🔐 Tiered Authentication**: Secure login and registration with token persistence for Administrator, Technician, and standard Customer roles.
+*   **🛠️ Service Tracking**: Create and assign technical repair requests for hardware diagnostics.
+*   **🛒 Shopping Cart & Orders**: Fully integrated checkout flow with transaction state-tracking and personal purchase logs.
 
-1. **Clone the repository**
-2. **Launch the stack**:
-   ```bash
-   docker compose up --build
+---
+
+## 🚀 Installation & Setup
+
+Follow these simple steps to run TechVault locally on your machine using Docker:
+
+### Prerequisites
+*   **Docker Desktop** (running)
+*   **Node.js** (v18.0.0 or higher)
+*   **npm** (bundled with Node.js)
+
+---
+
+### Method A: Run with Docker Compose (Recommended)
+
+1. **Navigate to the Project Directory**:
+   ```cmd
+   cd d:\projects\myshop
    ```
-3. **Explore the API**:
-   - **Swagger UI**: [http://localhost:8080/swagger](http://localhost:8080/swagger)
-   - **Hangfire Dashboard**: [http://localhost:8080/hangfire](http://localhost:8080/hangfire)
+
+2. **Launch the DB and API backend in Docker**:
+   ```cmd
+   docker compose up -d
+   ```
+   *   *The API backend will boot on:* `http://localhost:8080`
+   *   *Explore Swagger documentation at:* `http://localhost:8080/swagger`
+
+3. **Open the Frontend folder**:
+   ```cmd
+   cd techvault-frontend
+   ```
+
+4. **Install UI dependencies**:
+   ```cmd
+   npm install
+   ```
+
+5. **Start the Frontend development server**:
+   ```cmd
+   npm run dev
+   ```
+   *   *The Client will run on:* **`http://localhost:5173`**
 
 ---
 
-## 🛡️ Seed Accounts
+### Method B: Run C# Backend Locally (Host Machine)
 
-Use these pre-configured accounts to test the different role permissions:
+1. **Launch the SQL Server Container**:
+   ```cmd
+   docker compose up -d db
+   ```
 
-| Role | Username | Password | Purpose |
+2. **Run C# Backend from Root folder**:
+   ```cmd
+   cd d:\projects\myshop
+   dotnet run
+   ```
+
+3. **Launch Frontend**:
+   ```cmd
+   cd techvault-frontend
+   npm run dev
+   ```
+
+---
+
+## 🔐 Seed Accounts
+
+Use the following synchronized database accounts to test different roles:
+
+| Role | Username | Password | Purpose / Permissions |
 | :--- | :--- | :--- | :--- |
-| **Admin** | `admin` | `Admin123!` | Full system management |
-| **Technician** | `tech1` | `Tech123!` | Management of service requests |
-| **Customer** | `john` | `Customer123!` | Browsing and ordering |
-
----
-
-## 📐 System Architecture
-
-The project follows a **Service-Oriented Architecture (SOA)**:
-- **Controllers**: Thin entry points handling HTTP requests/responses.
-- **Services**: Encapsulated business logic and validation.
-- **Data**: Entity Framework Core context and automated migrations for Docker.
-- **Models/DTOs**: Clear separation between database entities and API contracts.
-
----
-
-## 🔒 Security Best Practices
-
-We prioritize security by implementing:
-- **BCrypt Password Hashing**: Slow hashing to mitigate brute-force attacks.
-- **JWT Scope Management**: Granular permissions via Role-based Authorization.
-- **SQL Injection Protection**: Fully parameterized queries via EF Core.
-- **Environment Isolation**: Secure configuration management via Docker environment variables.
-
----
-
-## 📡 API Endpoints Summary
-
-| Method | Endpoint | Access | Description |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Public | Create a new customer account |
-| `POST` | `/api/auth/login` | Public | Authenticated login & JWT issuance |
-| `GET` | `/api/products` | Public | List all active inventory |
-| `POST` | `/api/products` | Admin | Add new stock to the catalog |
-| `POST` | `/api/orders` | Customer | Submit a new purchase order |
-| `GET` | `/api/orders/my` | User | View personal purchase history |
-| `PUT` | `/api/service-requests/{id}/status` | Tech | Update status of a repair |
+| **Administrator** | `admin` | `123456` | Full catalog edits, stock management, and service control |
+| **Technician** | `tech` | `123456` | Diagnostic review and status updates on repairs |
+| **Customer** | `hazem` | `123456` | Premium hardware purchase, cart, and repair tickets |
 
 ---
 
 Developed with ❤️ for the TechVault Community.
-

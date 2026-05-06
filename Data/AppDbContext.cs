@@ -40,6 +40,14 @@ namespace TechVault.API.Data
                 .WithOne(p => p.Category)
                 .HasForeignKey(p => p.CategoryId);
 
+            // Product entity configuration
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.Property(p => p.StockStatus)
+                      .HasConversion<string>()
+                      .HasDefaultValue(StockStatus.InStock);
+            });
+
 
 
             // Order - OrderItem (One-to-Many)

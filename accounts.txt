@@ -1,32 +1,32 @@
 ========================================================================
-                      TECHVAULT DEFAULT ACCOUNTS
+                      TECHVAULT USER ACCOUNTS
 ========================================================================
 
-These are the default accounts pre-seeded in the database during system
-initialization. Use these to log in and test different system actions.
+These are the active user accounts configured in the system. Use these
+credentials to log in and test different system features.
 
 ------------------------------------------------------------------------
 1. ADMINISTRATOR ACCOUNT
 ------------------------------------------------------------------------
 Username:  admin
 Email:     admin@techvault.com
-Password:  Admin123!
+Password:  123456
 Role:      Admin (Full access to products, orders, and service requests dashboards)
 
 ------------------------------------------------------------------------
 2. TECHNICIAN ACCOUNT
 ------------------------------------------------------------------------
-Username:  tech1
+Username:  tech
 Email:     tech1@techvault.com
-Password:  Tech123!
+Password:  123456
 Role:      Technician (Access to diagnostic and repair service dashboards)
 
 ------------------------------------------------------------------------
-3. CUSTOMER ACCOUNT
+3. CUSTOMER ACCOUNT (STANDARD USER)
 ------------------------------------------------------------------------
-Username:  john
-Email:     john@example.com
-Password:  User123!
+Username:  hazem
+Email:     hazem@techvault.com
+Password:  123456
 Role:      Customer (Full access to product search, cart, checkout, and My Service Requests)
 
 ========================================================================

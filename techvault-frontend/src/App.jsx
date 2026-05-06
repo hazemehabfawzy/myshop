@@ -16,6 +16,7 @@ import ServiceRequestsPage from './pages/ServiceRequestsPage';
 import CreateServiceRequestPage from './pages/CreateServiceRequestPage';
 import AddProductPage from './pages/AddProductPage';
 import EditProductPage from './pages/EditProductPage';
+import StockManagementPage from './pages/StockManagementPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -79,6 +80,14 @@ function App() {
             element={
               <ProtectedRoute requiredRole="Admin">
                 <EditProductPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin/stock" 
+            element={
+              <ProtectedRoute requiredRole="Admin">
+                <StockManagementPage />
               </ProtectedRoute>
             } 
           />

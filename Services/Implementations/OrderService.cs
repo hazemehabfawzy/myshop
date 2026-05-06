@@ -69,6 +69,8 @@ namespace TechVault.API.Services.Implementations
             };
 
             decimal total = 0;
+            var orderItems = new List<OrderItem>();
+
             foreach (var item in dto.Items)
             {
                 var product = await _context.Products.FindAsync(item.ProductId);
@@ -80,23 +82,55 @@ namespace TechVault.API.Services.Implementations
                 var orderItem = new OrderItem
                 {
                     Id = Guid.NewGuid(),
-                    OrderId = order.Id,
                     ProductId = item.ProductId,
                     Product = product,
                     Quantity = item.Quantity,
                     UnitPrice = product.Price
                 };
                 total += orderItem.UnitPrice * orderItem.Quantity;
-                order.OrderItems.Add(orderItem);
+                orderItems.Add(orderItem);
 
                 // Reduce stock
                 product.StockQuantity -= item.Quantity;
+                if (product.StockQuantity <= 0)
+                {
+                    product.StockQuantity = 0;
+                    product.StockStatus = StockStatus.OutOfStock;
+                }
+                else if (product.StockQuantity < 10)
+                {
+                    product.StockStatus = StockStatus.LowStock;
+                }
+                else
+                {
+                    product.StockStatus = StockStatus.InStock;
+                }
             }
 
             order.TotalAmount = total;
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            
+            try
+            {
+                // Step 1: Save the order first to get its ID in the database
+                await _context.SaveChangesAsync();
 
+                // Step 2: Now attach and save order items with the valid OrderId
+                foreach (var item in orderItems)
+                {
+                    item.OrderId = order.Id;
+                    _context.OrderItems.Add(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                Console.WriteLine($"[OrderService ERROR] SaveChanges failed: {innerMsg}");
+                throw new Exception($"Database save failed: {innerMsg}", ex);
+            }
+
+            order.OrderItems = orderItems;
             return _mapper.Map<OrderResponseDto>(order);
         }
 

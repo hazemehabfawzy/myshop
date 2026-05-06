@@ -33,7 +33,7 @@ const CreateOrderPage = () => {
     if (query.length > 2) {
       try {
         const results = await productService.search(query);
-        setSearchResults(results);
+        setSearchResults(results.items || results);
       } catch (err) {
         console.error('Search failed');
       }
@@ -43,6 +43,13 @@ const CreateOrderPage = () => {
   };
 
   const addItem = (product) => {
+    if (product.stockQuantity <= 0 || product.stockStatus === 'OutOfStock') {
+      setError("This product is currently out of stock.");
+      setTimeout(() => setError(''), 5000);
+      setSearchQuery('');
+      setSearchResults([]);
+      return;
+    }
     const exists = selectedItems.find(i => i.productId === product.id);
     if (exists) {
       updateQuantity(product.id, exists.quantity + 1);
@@ -113,43 +120,7 @@ const CreateOrderPage = () => {
         <div>
           <div className="card" style={{ backgroundColor: 'var(--card-bg)', padding: '2rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', marginBottom: '2rem' }}>
             <h3 style={{ marginBottom: '1.5rem' }}>Add Products</h3>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Search products by name or brand..." 
-                value={searchQuery}
-                onChange={handleSearch}
-              />
-              {searchResults.length > 0 && (
-                <div style={{ 
-                  position: 'absolute', 
-                  top: '100%', 
-                  left: 0, 
-                  right: 0, 
-                  backgroundColor: 'var(--primary-light)', 
-                  border: '1px solid var(--border)', 
-                  borderRadius: 'var(--radius)',
-                  zIndex: 50,
-                  marginTop: '0.5rem',
-                  maxHeight: '300px',
-                  overflowY: 'auto'
-                }}>
-                  {searchResults.map(p => (
-                    <div 
-                      key={p.id} 
-                      onClick={() => addItem(p)}
-                      style={{ padding: '1rem', cursor: 'pointer', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between' }}
-                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--primary)'}
-                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      <span>{p.name}</span>
-                      <span style={{ color: 'var(--accent)', fontWeight: '700' }}>{formatPrice(p.price)}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Search Input and dropdown removed as requested */}
 
             <div style={{ marginTop: '2rem' }}>
               {selectedItems.length === 0 ? (

@@ -16,6 +16,8 @@ namespace TechVault.API.DTOs.Product
         [Required, Range(0, 100000)]
         public int StockQuantity { get; set; }
 
+        public string StockStatus { get; set; } = "InStock";
+
         [Required, MaxLength(100)]
         public string Brand { get; set; } = string.Empty;
 
@@ -25,7 +27,7 @@ namespace TechVault.API.DTOs.Product
         [MaxLength(50)]
         public string? SKU { get; set; }
 
-        [Url, MaxLength(500)]
+        [MaxLength(500)]
         public string? ImageUrl { get; set; }
 
         [Required]
@@ -48,6 +50,8 @@ namespace TechVault.API.DTOs.Product
         [Range(0, 100000)]
         public int? StockQuantity { get; set; }
 
+        public string? StockStatus { get; set; }
+
         [MaxLength(100)]
         public string? Brand { get; set; }
 
@@ -57,7 +61,7 @@ namespace TechVault.API.DTOs.Product
         [MaxLength(50)]
         public string? SKU { get; set; }
 
-        [Url, MaxLength(500)]
+        [MaxLength(500)]
         public string? ImageUrl { get; set; }
 
         public Guid? CategoryId { get; set; }
@@ -74,6 +78,7 @@ namespace TechVault.API.DTOs.Product
         public string? Description { get; set; }
         public decimal Price { get; set; }
         public int StockQuantity { get; set; }
+        public string StockStatus { get; set; } = "InStock";
         public string Brand { get; set; } = string.Empty;
         public string? Model { get; set; }
         public string? SKU { get; set; }
