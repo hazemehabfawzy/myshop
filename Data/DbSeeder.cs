@@ -23,20 +23,18 @@ namespace TechVault.API.Data
             }
 
             // Re-seed with correct BCrypt hashes as per Fix 3
-            var adminHash = BCrypt.Net.BCrypt.HashPassword("Admin123!");
-            var techHash = BCrypt.Net.BCrypt.HashPassword("Tech123!");
-            var userHash = BCrypt.Net.BCrypt.HashPassword("User123!");
+            var defaultHash = BCrypt.Net.BCrypt.HashPassword("123456");
 
-            var adminUser = new User { Id = Guid.NewGuid(), Username = "admin", Email = "admin@techvault.com", PasswordHash = adminHash, Role = "Admin" };
-            var techUser = new User { Id = Guid.NewGuid(), Username = "tech1", Email = "tech1@techvault.com", PasswordHash = techHash, Role = "Technician" };
-            var johnUser = new User { Id = Guid.NewGuid(), Username = "john", Email = "john@example.com", PasswordHash = userHash, Role = "Customer" };
+            var adminUser = new User { Id = Guid.NewGuid(), Username = "admin", Email = "admin@techvault.com", PasswordHash = defaultHash, Role = "Admin" };
+            var techUser = new User { Id = Guid.NewGuid(), Username = "tech", Email = "tech@techvault.com", PasswordHash = defaultHash, Role = "Technician" };
+            var hazemUser = new User { Id = Guid.NewGuid(), Username = "hazem", Email = "hazem@techvault.com", PasswordHash = defaultHash, Role = "Customer" };
 
-            context.Users.AddRange(adminUser, techUser, johnUser);
+            context.Users.AddRange(adminUser, techUser, hazemUser);
             
             context.CustomerProfiles.AddRange(
                 new CustomerProfile { Id = Guid.NewGuid(), UserId = adminUser.Id, FullName = "System Admin" },
                 new CustomerProfile { Id = Guid.NewGuid(), UserId = techUser.Id, FullName = "Tech Lead" },
-                new CustomerProfile { Id = Guid.NewGuid(), UserId = johnUser.Id, FullName = "John Doe", PhoneNumber = "555-0199", Address = "Tech City, 42" }
+                new CustomerProfile { Id = Guid.NewGuid(), UserId = hazemUser.Id, FullName = "Hazem Fawzy", PhoneNumber = "555-0199", Address = "Tech City, 42" }
             );
 
             // FIX 4 - BACKEND + SEED: Replace ALL products with PC hardware focus

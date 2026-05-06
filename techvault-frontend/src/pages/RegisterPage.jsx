@@ -93,7 +93,7 @@ const RegisterPage = () => {
               className={`form-control ${fieldErrors.username ? 'error' : ''}`}
               value={formData.username}
               onChange={handleChange}
-              placeholder="johndoe"
+              placeholder="hazemdoe"
             />
             {fieldErrors.username && <p className="error-text">{fieldErrors.username}</p>}
           </div>
@@ -106,7 +106,7 @@ const RegisterPage = () => {
               className={`form-control ${fieldErrors.fullName ? 'error' : ''}`}
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="John Doe"
+              placeholder="Hazem Fawzy"
             />
             {fieldErrors.fullName && <p className="error-text">{fieldErrors.fullName}</p>}
           </div>

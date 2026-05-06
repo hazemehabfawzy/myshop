@@ -17,7 +17,7 @@ Role:      Admin (Full access to products, orders, and service requests dashboar
 2. TECHNICIAN ACCOUNT
 ------------------------------------------------------------------------
 Username:  tech
-Email:     tech1@techvault.com
+Email:     tech@techvault.com
 Password:  123456
 Role:      Technician (Access to diagnostic and repair service dashboards)
 
