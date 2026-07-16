@@ -25,9 +25,9 @@ namespace TechVault.API.Data
             // Re-seed with correct BCrypt hashes as per Fix 3
             var defaultHash = BCrypt.Net.BCrypt.HashPassword("123456");
 
-            var adminUser = new User { Id = Guid.NewGuid(), Username = "admin", Email = "admin@techvault.com", PasswordHash = defaultHash, Role = "Admin" };
-            var techUser = new User { Id = Guid.NewGuid(), Username = "tech", Email = "tech@techvault.com", PasswordHash = defaultHash, Role = "Technician" };
-            var hazemUser = new User { Id = Guid.NewGuid(), Username = "hazem", Email = "hazem@techvault.com", PasswordHash = defaultHash, Role = "Customer" };
+            var adminUser = new User { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Username = "admin", Email = "admin@techvault.com", PasswordHash = defaultHash, Role = "Admin" };
+            var techUser = new User { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Username = "tech", Email = "tech@techvault.com", PasswordHash = defaultHash, Role = "Technician" };
+            var hazemUser = new User { Id = Guid.Parse("00000000-0000-0000-0000-000000000003"), Username = "hazem", Email = "hazem@techvault.com", PasswordHash = defaultHash, Role = "Customer" };
 
             context.Users.AddRange(adminUser, techUser, hazemUser);
             

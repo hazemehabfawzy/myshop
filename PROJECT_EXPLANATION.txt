@@ -1,0 +1,146 @@
+========================================================================
+                  TECHVAULT - COMPREHENSIVE PROJECT OVERVIEW
+========================================================================
+
+STEP 1 — PROJECT OVERVIEW & BUSINESS IDEA
+------------------------------------------------------------------------
+What it is: 
+TechVault is a full-stack electronic shop and repair service center. Think of it as a hybrid between an e-commerce platform (like Newegg or Amazon) for buying PC parts, phones, and laptops, and a ticketing system for tracking device repairs.
+
+Why it exists: 
+It solves two main problems:
+1. It gives customers an intuitive online platform to buy hardware.
+2. It streamlines the repair process, allowing customers to book services and track their device's status without calling the store.
+
+User Roles:
+* Customers: Can browse products by categories (like GPUs, CPUs, Cases), view detailed specifications, add items to a cart, place multi-item orders, submit repair requests for their broken devices, and track the status of both orders and repairs.
+* Admins & Technicians: Admins have full control over the catalog (creating, updating, deleting products) and managing all orders. Technicians (and Admins) are assigned to service requests, where they diagnose issues, update the repair status (e.g., "Waiting for Parts", "In Progress"), and log their notes.
+
+
+STEP 2 — TECH STACK EXPLAINED
+------------------------------------------------------------------------
+The Backend
+* ASP.NET Core 8 Web API: Microsoft’s high-performance framework for building HTTP APIs using C#. It’s strongly typed, extremely fast, and ideal for enterprise-grade applications. It acts as the "brain," handling all business logic and database interactions.
+* Entity Framework Core 8 (EF Core): Our Object-Relational Mapper (ORM). Instead of writing raw SQL strings, you write C# queries (LINQ). EF Core translates your C# models into database tables using Migrations.
+* SQL Server: A robust relational database running inside a Docker container. It persistently stores all our users, products, and orders.
+* JWT (JSON Web Token) Authentication: The modern standard for stateless authentication. When a user logs in, the API returns a signed JWT. The React frontend stores this and sends it in the Authorization: Bearer <token> header of every subsequent request.
+* BCrypt: A secure password hashing algorithm. Passwords are never stored in plain text.
+* Swagger (Swashbuckle): Auto-generates an interactive UI (http://localhost:8080/swagger) based on your API code.
+* Docker & Docker Compose: Containerization tools. Running `docker compose up --build` spins up the db and backend instantly.
+
+The Frontend
+* React 18 (Vite): A component-based JavaScript library for building user interfaces. Vite is the build tool because it is significantly faster than Create React App.
+* React Router v6: Handles client-side routing. It turns our app into a Single Page Application (SPA), allowing users to jump between /products, /orders, and /login without the browser reloading the page.
+* Axios: An HTTP client library used to talk to the backend. It supports interceptors—which we use to automatically attach the JWT token to every outgoing request.
+* useState & useEffect (React Hooks): useState holds our data, and useEffect triggers side effects (like fetching data from the API as soon as a page loads).
+
+
+STEP 3 — DATABASE DESIGN & ENTITIES
+------------------------------------------------------------------------
+Our database is relational, meaning tables are linked to one another.
+
+1. User: Stores accounts (Id, Username, PasswordHash, Role).
+2. CustomerProfile (1-to-1 with User): Holds extended details (FullName, Address, PhoneNumber).
+3. Category (1-to-Many with Product): Groups products. It also has a ParentCategoryId (Self-Referencing) to allow for subcategories.
+4. Product: The core item (Name, Price, StockQuantity). Belongs to a Category.
+5. ProductSpecification (1-to-1 with Product): Stores complex technical specs as a JSON string (e.g., VRAM, TDP).
+6. Order (1-to-Many with User): Represents a purchase, holding the TotalAmount, Status, and the UserId of the buyer.
+7. OrderItem (Many-to-Many bridge): Connects an Order to Products. Crucially, it stores UnitPrice and Quantity. We snapshot the price here so if the product price changes, the historical order receipt remains accurate.
+8. ServiceRequest (1-to-Many with User): Tracks repair jobs. Contains DeviceType, IssueDescription, Status, and is linked to the customer and optionally an assigned TechnicianId.
+9. Tag & ProductTag (Many-to-Many): Allows assigning flexible labels like "Gaming" or "Budget" to products.
+
+
+STEP 4 — BACKEND ARCHITECTURE (ASP.NET Core)
+------------------------------------------------------------------------
+* Controllers: The entry points. They receive HTTP requests, validate input, call the Services, and return HTTP responses. They never contain business logic.
+* Services: Where the heavy lifting happens (the business logic). They use the DbContext to fetch/save data. 
+* Models/Entities: Pure C# classes representing the DB tables.
+* DTOs (Data Transfer Objects): We never send or receive raw Entity models via the API. DTOs are flattened, safe versions of our data. 
+* AppDbContext: The EF Core bridge to the database, containing DbSet<T> for each table.
+* Program.cs: The startup file. It registers all services for Dependency Injection.
+
+Dependency Injection (DI): Instead of ProductService manually instantiating AppDbContext, we tell ASP.NET to "inject" it via the constructor. This makes the code loosely coupled.
+
+
+STEP 5 — JWT AUTHENTICATION FLOW
+------------------------------------------------------------------------
+Registration:
+1. User sends a POST to /api/auth/register.
+2. The backend hashes the password using BCrypt.HashPassword().
+3. The new User is saved, and a JWT is generated and returned to the client.
+
+Login:
+1. User sends username and password to /api/auth/login.
+2. Backend finds the user and verifies the password: BCrypt.Verify(plainPassword, hash).
+3. If valid, a JWT is created containing "Claims" (UserId, Username, Role).
+4. The JWT is cryptographically signed using a secret key and returned.
+
+Authenticated Requests:
+1. The frontend stores the token in localStorage.
+2. The Axios interceptor automatically adds Authorization: Bearer <token> to all API calls.
+3. ASP.NET validates the token signature and reads the claims. Controller attributes like [Authorize(Roles="Admin")] restrict access.
+
+
+STEP 6 — API ENDPOINTS
+------------------------------------------------------------------------
+* Auth: /register (creates account), /login (returns token).
+* Products: Public GET endpoints for listing, searching, and filtering. Admin-only POST, PUT, DELETE to manage inventory. 
+* Categories: Standard CRUD, plus nested /subcategories.
+* Orders: Authenticated POST to create an order. Customers can GET /my orders. Admins can view all orders and update statuses.
+* Service Requests: Authenticated POST to submit a broken device. Technicians/Admins use PUT to update statuses.
+* Customers: Profile management.
+
+
+STEP 7 — FRONTEND ARCHITECTURE (React)
+------------------------------------------------------------------------
+* src/components/: Reusable UI pieces (Navbar, ProductCard, ProtectedRoute).
+* src/pages/: Full-page views (ProductsPage, CreateOrderPage, HomePage).
+* src/services/: The API layer. axiosClient.js configures the base URL and interceptors.
+* src/context/: AuthContext holds the global state of the user.
+* App.jsx & Routing: Uses React Router to map URLs to the correct Page component.
+
+
+STEP 8 — DOCKER SETUP EXPLAINED
+------------------------------------------------------------------------
+Our docker-compose.yml has two services:
+1. api: Built using a multi-stage Dockerfile. It compiles the C# app and exposes port 8080.
+2. db: A SQL Server container running in the background.
+Docker creates an isolated internal network. The API connects to the database using the hostname `db` (the service name). 
+
+
+STEP 9 — KEY DESIGN DECISIONS EXPLAINED
+------------------------------------------------------------------------
+* Why AsNoTracking()? For GET requests where we only read data, tracking wastes memory. AsNoTracking() makes queries much faster.
+* Why Select() instead of full entities? Returning full entities can cause circular reference errors and leak data. Select() maps the database row directly into a clean ResponseDto.
+* Why Soft Deletes (IsActive = false)? If you permanently delete a Product, you break the foreign keys of old OrderItems that reference it. Soft deleting simply hides it from the catalog.
+* Why snapshot UnitPrice? Prices fluctuate. If you don't store the exact price the customer paid inside the OrderItem, changing the product's price later would alter historical invoices.
+
+
+STEP 10 — HOW TO RUN THE PROJECT
+------------------------------------------------------------------------
+Using Docker:
+1. Clone the repo and navigate to the root folder.
+2. Run `docker compose up --build`.
+3. Wait for SQL Server to boot. The API/Swagger is at http://localhost:8080/swagger.
+4. In a new terminal, go to /techvault-frontend, run `npm install` and then `npm run dev`. The frontend is at http://localhost:5173.
+
+Login with Seeded Accounts:
+* Admin: admin / 123456
+* Tech: tech / 123456
+* Customer: hazem / 123456
+
+
+STEP 11 — COMMON ERRORS & HOW TO FIX THEM
+------------------------------------------------------------------------
+* Error: "An error occurred while saving the entity changes"
+  Fix: Explicitly set the ID before saving, or use HasColumnType("decimal(18,2)") in OnModelCreating.
+* Error: Arabic/Indic numerals in UI
+  Fix: Force English formatting in React using Intl.NumberFormat('en-US', ...).
+* Error: CORS error in browser
+  Fix: Ensure AddCors is configured in Program.cs to allow http://localhost:5173.
+* Error: Password hashed twice (login fails)
+  Fix: Ensure hashing happens exactly once before DB insertion.
+
+========================================================================
+END OF PROJECT EXPLANATION
+========================================================================

@@ -43,7 +43,7 @@ Follow these simple steps to run TechVault locally on your machine using Docker:
 
 1. **Navigate to the Project Directory**:
    ```cmd
-   cd d:\projects\myshop
+   cd d:\projects\TechVault
    ```
 
 2. **Launch the DB and API backend in Docker**:
@@ -80,7 +80,7 @@ Follow these simple steps to run TechVault locally on your machine using Docker:
 
 2. **Run C# Backend from Root folder**:
    ```cmd
-   cd d:\projects\myshop
+   cd d:\projects\TechVault
    dotnet run
    ```
 
